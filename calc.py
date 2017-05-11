@@ -36,19 +36,16 @@ matches = matches.merge(teams, left_on='away_team_api_id', right_on='team_api_id
 matches = matches[['id', 'season', 'date', 'home_team_goal', 'away_team_goal', 'B365H', 'BWH', 'IWH', 'LBH', 'PSH',
                    'WHH', 'SJH', 'VCH', 'GBH', 'BSH','team_long_name', 'team_long_name_a']]
 
-oddsH = matches[['B365H', 'BWH', 'IWH', 'LBH', 'PSH', 'WHH', 'SJH',
-                 'VCH', 'GBH', 'BSH']]
-print(oddsH.head())
-print()
-print(matches.shape)
-# Best odds
+
 # Look the results
 matches['result'] = 'H'
 matches.loc[matches.home_team_goal == matches.away_team_goal, "result"] = 'D'
 matches.loc[matches.home_team_goal < matches.away_team_goal, "result"] = 'A'
 
 # Betting rule
-matches['payout'] = matches.our_oddsH
+matches['payout'] = matches[['B365H', 'BWH', 'IWH', 'LBH', 'PSH', 'WHH', 'SJH',
+                 'VCH', 'GBH', 'BSH']].max(axis=1)
+
 # our team either lost or drew. reset payout to 0
 matches.loc[~(matches.result == 'H'), "payout"] = 0
 matches.head()
